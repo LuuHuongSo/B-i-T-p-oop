@@ -1,0 +1,12 @@
+{
+    "java.project.referencedLibraries": [
+        "D:/javafx-sdk-21.0.2/lib/*.jar"
+    ],
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaFX",
+            "path": "D:/javafx-sdk-21.0.2",
+            "default": true
+        }
+    ]
+}
