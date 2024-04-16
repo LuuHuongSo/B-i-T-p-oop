@@ -7,6 +7,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TankGame extends Application {
 
@@ -15,15 +17,15 @@ public class TankGame extends Application {
     private static final int TANK_SIZE = 30;
     private static final int BULLET_SIZE = 5;
 
-    private int playerTankX = WIDTH / 2 + (TANK_SIZE / 2);
+    private int playerTankX = WIDTH / 2;
     private int playerTankY = HEIGHT - TANK_SIZE - 50;
-    private int aiTankX = WIDTH / 2 + (TANK_SIZE / 2);
+    private int aiTankX = WIDTH / 2;
     private int aiTankY = 50;
 
     private boolean isShooting = false;
     private int mybulletX;
     private int mybulletY;
-    //private boolean isMeMoving = true;
+    private List<Wall> walls = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) {
@@ -35,6 +37,21 @@ public class TankGame extends Application {
         root.getChildren().add(canvas);   
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
+
+        walls.add(new Wall(100, 100, 100, 20));
+        walls.add(new Wall(100, 120, 20, 80));
+        walls.add(new Wall(600, 100, 100, 20));
+        walls.add(new Wall(680, 120, 20, 80));
+        walls.add(new Wall(100, 400, 20, 80));
+        walls.add(new Wall(100, 480, 100, 20));
+        walls.add(new Wall(680, 400, 20, 80));
+        walls.add(new Wall(600, 480, 100, 20));
+        walls.add(new Wall(290, 90, 20, 60));
+        walls.add(new Wall(490, 90, 20, 60));
+        walls.add(new Wall(310, 130, 180, 20));
+        walls.add(new Wall(290, 450, 20, 60));
+        walls.add(new Wall(490, 450, 20, 60));
+        walls.add(new Wall(310, 450, 180, 20));
 
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.A) {
@@ -129,37 +146,14 @@ public class TankGame extends Application {
         else return false;
     }
 
-    // hàm tạo cửa sổ khi win game
-    /*private void winGame(Stage stage) {
-        /*Text text = new Text();
-        text.setFont(new Font(45));
-        text.setX(30);
-        text.setY(100);
-        text.setText("YOU WIN");
-        Group root2 = new Group();
-
-
-        Canvas win = new Canvas();
-        StackPane gamewin = new StackPane();
-        gamewin.getChildren().add(win);
-        Scene youwin = new Scene(gamewin,400,200);
-        gc.setText("YOU WIN");
-        stage.setScene(youwin);
-        stage.show();
-    }*/
 
     private void draw(GraphicsContext gc) {
         gc.clearRect(0, 0, WIDTH, HEIGHT);
 
-        //Ve tuong
-        gc.setFill(Color.BLACK);
-        gc.fillRect(340, 0, 10, 150);
-        gc.fillRect(120, 100, 10, 150);
-        gc.fillRect(330, 420, 200, 10);
-        gc.fillRect(550, 100, 180, 10);
-        gc.fillRect(550, 300, 180, 10);
-        gc.fillRect(640, 420, 10, 180);
-        gc.fillRect(720, 300, 10, 200);
+        // Vẽ tường
+        for (Wall wall : walls) {
+            wall.drawWall(gc);
+        }
 
         // Ve tank nguoi choi
         gc.setFill(Color.BLUE);
