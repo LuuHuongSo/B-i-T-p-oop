@@ -8,7 +8,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.ArrayList;
-import java.util.List;
+//import java.util.List;
 
 public class TankGame extends Application {
 
@@ -25,7 +25,7 @@ public class TankGame extends Application {
     private boolean isShooting = false;
     private int mybulletX;
     private int mybulletY;
-    private List<Wall> walls = new ArrayList<>();
+    private ArrayList<Wall> walls = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) {
@@ -56,24 +56,31 @@ public class TankGame extends Application {
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.A) {
                 if(!biChanTrai()) {
-                    movePlayerTank(-10);
+                    if(!tuongChanTrai(walls, playerTankX, playerTankY, TANK_SIZE)) {
+                        movePlayerTank(-10);
+                    }
                 }
-                //movePlayerTank(-10);
             } else if (event.getCode() == KeyCode.D) {
                 if(!biChanPhai()) {
-                    movePlayerTank(10);
+                    if(!tuongChanPhai(walls, playerTankX, playerTankY, TANK_SIZE)) {
+                        movePlayerTank(10);
+                    }
+                    //movePlayerTank(10);
                 }
-                //movePlayerTank(10);
             } else if (event.getCode() == KeyCode.W) {
                 if(!biChanTren()){
-                    movePlayerTankUpDown(10);
+                    if(!tuongChanTren(walls, playerTankX, playerTankY, TANK_SIZE)) {
+                        movePlayerTankUpDown(10);
+                    }
+                    //movePlayerTankUpDown(10);
                 }
-                //movePlayerTankUpDown(10);
             } else if (event.getCode() == KeyCode.S) {
                 if(!biChanDuoi()) {
-                    movePlayerTankUpDown(-10);
+                    if(!tuongChanDuoi(walls, playerTankX, playerTankY, TANK_SIZE)) {
+                        movePlayerTankUpDown(-10);
+                    }
+                    //movePlayerTankUpDown(-10);
                 }
-                //movePlayerTankUpDown(-10);
             } else if (event.getCode() == KeyCode.J) {
                 shoot();
             }
@@ -144,6 +151,31 @@ public class TankGame extends Application {
     private boolean biChanPhai() {
         if(playerTankX + TANK_SIZE == aiTankX && playerTankY + TANK_SIZE > aiTankY && playerTankY < aiTankY + TANK_SIZE) return true;
         else return false;
+    }
+
+    public boolean tuongChanTren(ArrayList<Wall> List, int x, int y, int size) {
+        for(Wall wall : List) {
+            if(y == wall.getToaDoY() + wall.getRong() && x + size > wall.getToaDoX() && x < wall.getToaDoX() + wall.getDai()) return true;
+        }
+        return false;
+    }
+    public boolean tuongChanDuoi(ArrayList<Wall> List, int x, int y, int size) {
+        for(Wall wall : List) {
+            if(y + size == wall.getToaDoY() && x + size > wall.getToaDoX() && x < wall.getToaDoX() + wall.getDai()) return true;
+        }
+        return false;
+    }
+    public boolean tuongChanTrai(ArrayList<Wall> List, int x, int y, int size) {
+        for(Wall wall : List) {
+            if(x == wall.getToaDoX() + wall.getDai() && y + size > wall.getToaDoY() && y < wall.getToaDoY() + wall.getRong()) return true;
+        }
+        return false;
+    }
+    public boolean tuongChanPhai(ArrayList<Wall> List, int x, int y, int size) {
+        for(Wall wall : List) {
+            if(x + size == wall.getToaDoX() && y + size > wall.getToaDoY() && y < wall.getToaDoY() + wall.getRong()) return true;
+        }
+        return false;
     }
 
 
