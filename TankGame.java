@@ -52,6 +52,7 @@ public class TankGame extends Application {
         walls.add(new Wall(290, 450, 20, 60));
         walls.add(new Wall(490, 450, 20, 60));
         walls.add(new Wall(310, 450, 180, 20));
+        walls.add(new Wall(200, 340, 100, 20));
 
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.A) {
@@ -88,7 +89,10 @@ public class TankGame extends Application {
 
         scene.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.J) {
-                isShooting = false;
+                /*if(tuongChanDan(walls, mybulletX, mybulletY, BULLET_SIZE)) {
+                    isShooting = true;
+                }*/
+                isShooting = true;
             }
         });
 
@@ -131,7 +135,7 @@ public class TankGame extends Application {
 
     private void moveBullet() {
         mybulletY -= 10;
-        if (mybulletY < 0) {
+        if (mybulletY < playerTankY - 250 || tuongChanDan(walls, mybulletX, mybulletY, BULLET_SIZE)) {
             isShooting = false;
         }
     }
@@ -177,6 +181,17 @@ public class TankGame extends Application {
         }
         return false;
     }
+
+
+    public boolean tuongChanDan(ArrayList<Wall> List, int x, int y, int bulletsize) {
+        for (Wall wall : List) {
+            if (x >= wall.getToaDoX() && x <= wall.getToaDoX() + wall.getDai() && y >= wall.getToaDoY() && y <= wall.getToaDoY() + wall.getRong()) {
+                return true; 
+            }
+        }
+        return false; 
+    }
+    
 
 
     private void draw(GraphicsContext gc) {
