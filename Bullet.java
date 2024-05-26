@@ -7,12 +7,10 @@ public class Bullet {
     private double tamX;
     private double tamY;
     private final double bulletsize = 5.0;
-    //private double angle;
 
     public Bullet(double X, double Y) {
         this.x = X;
         this.y = Y;
-        //this.angle = 0;
         this.tamX = this.x + this.bulletsize / 2;
         this.tamY = this.y + this.bulletsize / 2;
     } 

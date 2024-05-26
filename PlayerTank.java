@@ -3,11 +3,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class PlayerTank extends Tank {
-    //private double x;
-    //private double y;
     private double tamX;
     private double tamY;
-    //private double angle;
     public double width = 20;
     public double height = 30;
     private static final double SPEED = 5.0;
@@ -105,6 +102,13 @@ public class PlayerTank extends Tank {
 
     public double getAngle() {
         return angle;
+    }
+    public double getBarrelEndX() {
+        return x + width / 2 + (height / 2 * Math.sin(angle));
+    }
+
+    public double getBarrelEndY() {
+        return y + height / 2 - (height / 2 * Math.cos(angle));
     }
 
     private class TankStub extends Tank {

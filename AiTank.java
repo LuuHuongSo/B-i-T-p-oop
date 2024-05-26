@@ -3,9 +3,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class AiTank extends Tank {
-    private double x;
-    private double y;
-    private double angle;
     private double tamX;
     private double tamY;
     public static final double width = 20;
@@ -108,8 +105,8 @@ public class AiTank extends Tank {
 
     public void moveBullet() {
         if (isShooting) {
-            bulletX += 4 * Math.cos(Math.toRadians(angle));
-            bulletY += 4 * Math.sin(Math.toRadians(angle));
+            bulletX += 8 * Math.cos(Math.toRadians(angle));
+            bulletY += 8 * Math.sin(Math.toRadians(angle));
 
             if (bulletX < 0 || bulletX > 800 || bulletY < 0 || bulletY > 600) {
                 isShooting = false;
