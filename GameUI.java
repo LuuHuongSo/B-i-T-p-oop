@@ -17,7 +17,7 @@ public class GameUI extends Application {
 
         backgroundImageView.setFitWidth(800); 
         backgroundImageView.setFitHeight(600);
-        backgroundImageView.setPreserveRatio(true); // Giữ tỷ lệ của ảnh
+        backgroundImageView.setPreserveRatio(true);
 
         Button bt = new Button("Play game");
         bt.setOnAction(event -> {

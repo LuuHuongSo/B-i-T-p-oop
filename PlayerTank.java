@@ -7,13 +7,13 @@ public class PlayerTank extends Tank {
     private double tamY;
     public double width = 20;
     public double height = 30;
-    private static final double SPEED = 5.0;
-    private static final double ROTATION_SPEED = 0.1;
+    private static final double SPEED = 3.0;
+    private static final double ROTATION_SPEED = 0.05;
 
-    public PlayerTank(double x, double y) {
+    public PlayerTank(double x, double y, double angle) {
         this.x = x;
         this.y = y;
-        this.angle = 0;
+        this.angle = angle;
         this.tamX = x + width / 2;
         this.tamY = y + height / 2;
     }
@@ -56,23 +56,31 @@ public class PlayerTank extends Tank {
         gc.setStroke(Color.BLACK);
         gc.strokeRect(x + (width - barrelWidth) / 2, y - barrelHeight, barrelWidth, barrelHeight);
 
+        //draw hp
+        gc.setFill(Color.RED);
+        gc.fillRect(x - 15, y + 33, 45, 5);
+        gc.setFill(Color.GREEN);
+        gc.fillRect(x - 15, y + 33, this.getHp() * 15, 5);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(x - 15, y + 33, 45, 5);
+
         gc.restore();
     }
 
-    public void moveForWard(Map gameMap) {
+    public void moveForWard(Map gameMap, Tank playerTank2, double WIDTH, double HEIGHT) {
         double newX = x + SPEED * Math.sin(angle);
         double newY = y - SPEED * Math.cos(angle);
-        if(!gameMap.isCollisionWithWalls(new TankStub(newX, newY, width, height))) {
+        if(!gameMap.isCollisionWithWalls(new TankStub(newX, newY, width, height)) && !isCollidingWithO(playerTank2, newX, newY) && newX >= 0 && newX + width<= WIDTH && newY + height <= HEIGHT && newY >= 0) {
             x = newX;
             y = newY;
         }
         updateCenter();
     }
 
-    public void moveBackward(Map gameMap) {
+    public void moveBackward(Map gameMap, Tank playerTank2, double WIDTH, double HEIGHT) {
         double newX = x - SPEED * Math.sin(angle);
         double newY = y + SPEED * Math.cos(angle);
-        if(!gameMap.isCollisionWithWalls(new TankStub(newX, newY, width, height))) {
+        if(!gameMap.isCollisionWithWalls(new TankStub(newX, newY, width, height)) && !isCollidingWithO(playerTank2, newX, newY) && newX >= 0 && newX + width <= WIDTH && newY + height <= HEIGHT && newY >= 0) {
             x = newX;
             y = newY;
         }
@@ -110,6 +118,32 @@ public class PlayerTank extends Tank {
     public double getBarrelEndY() {
         return y + height / 2 - (height / 2 * Math.cos(angle));
     }
+    public void shoot() {
+        if (!isShooting) {
+            double bulletX = this.getBarrelEndX();
+            double bulletY = this.getBarrelEndY();
+            double bulletAngle = this.angle;
+            bullet = new Bullet(bulletX, bulletY, bulletAngle);
+            isShooting = true;
+        }
+    }
+    public void moveBullet(Map gameMap, double WIDTH, double HEIGHT) {
+        bullet.moveBullet();
+        if (bullet.getDistanceTraveled() > 250 || gameMap.isBulletCollision(bullet)) {
+            isShooting = false;
+        }
+    }
+    //|| bullet.getX() < 0 || bullet.getX() > WIDTH || bullet.getY() < 0 || bullet.getY() > HEIGHT
+    public void reduceHp(PlayerTank tank) {
+        if(tank.bullet.isHit(this)) {
+            hp --;
+        }
+    }
+    private boolean isCollidingWithO(Tank playerTank2, double newX, double newY) {
+        Rectangle2D newBounds = new Rectangle2D(newX, newY, width, height);
+        return newBounds.intersects(playerTank2.getBounds());
+    }
+
 
     private class TankStub extends Tank {
         public TankStub(double x, double y, double width, double height) {

@@ -9,10 +9,10 @@ public class AiTank extends Tank {
     public static final double height = 30;
     private static final double SPEED = 1.5;
     private boolean isShooting = false;
-    private double bulletX;
-    private double bulletY;
     private double playerX;
     private double playerY;
+    private double bulletX;
+    private double bulletY;
     private static final double BULLET_SIZE = 5;
 
     public AiTank(double x, double y) {

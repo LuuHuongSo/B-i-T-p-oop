@@ -5,7 +5,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -14,18 +13,24 @@ public class TankGame extends Application {
     private static final double WIDTH = 800;
     private static final double HEIGHT = 600;
 
-    private PlayerTank playerTank;
-    private AiTank aiTank;
+    private PlayerTank playerTank1;
+    private PlayerTank playerTank2;
+    //private AiTank aiTank;
 
-    private boolean isShooting = false;
-    private Bullet mybullet;
+    //private boolean isShooting = false;
+    //private Bullet mybullet;
 
     private Map gameMap;
 
-    private boolean moveLeft = false;
-    private boolean moveRight = false;
-    private boolean moveForward = false;
-    private boolean moveBackward = false;
+    private boolean moveLeft1 = false;
+    private boolean moveRight1 = false;
+    private boolean moveForward1 = false;
+    private boolean moveBackward1 = false;
+
+    private boolean moveLeft2 = false;
+    private boolean moveRight2 = false;
+    private boolean moveForward2 = false;
+    private boolean moveBackward2 = false;
 
     @Override
     public void start(Stage primaryStage) {
@@ -46,25 +51,40 @@ public class TankGame extends Application {
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         gameMap = new Map();
-        playerTank = new PlayerTank(WIDTH / 2, HEIGHT - 80);
-        aiTank = new AiTank(WIDTH / 2, 50);
+        playerTank1 = new PlayerTank(WIDTH / 2, HEIGHT - 80, 0);
+        playerTank2 = new PlayerTank(WIDTH / 2, 50, 180);
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case A:
-                    moveLeft = true;
+                    moveLeft1 = true;
                     break;
                 case D:
-                    moveRight = true;
+                    moveRight1 = true;
                     break;
                 case W:
-                    moveForward = true;
+                    moveForward1 = true;
                     break;
                 case S:
-                    moveBackward = true;
+                    moveBackward1 = true;
                     break;
                 case J:
-                    shoot();
+                    playerTank1.shoot();
+                    break;
+                case LEFT:
+                    moveLeft2 = true;
+                    break;
+                case RIGHT:
+                    moveRight2 = true;
+                    break;
+                case UP:
+                    moveForward2 = true;
+                    break;
+                case DOWN:
+                    moveBackward2 = true;
+                    break;
+                case SPACE:
+                    playerTank2.shoot();
                     break;
                 default:
                     break;
@@ -74,19 +94,34 @@ public class TankGame extends Application {
         scene.setOnKeyReleased(event -> {
             switch (event.getCode()) {
                 case A:
-                    moveLeft = false;
+                    moveLeft1 = false;
                     break;
                 case D:
-                    moveRight = false;
+                    moveRight1 = false;
                     break;
                 case W:
-                    moveForward = false;
+                    moveForward1 = false;
                     break;
                 case S:
-                    moveBackward = false;
+                    moveBackward1 = false;
                     break;
                 case J:
-                    isShooting = true;
+                    playerTank1.isShooting = true;
+                    break;
+                case LEFT:
+                    moveLeft2 = false;
+                    break;
+                case RIGHT:
+                    moveRight2 = false;
+                    break;
+                case UP:
+                    moveForward2 = false;
+                    break;
+                case DOWN:
+                    moveBackward2 = false;
+                    break;
+                case SPACE:
+                    playerTank2.isShooting = true;
                     break;
                 default:
                     break;
@@ -100,43 +135,57 @@ public class TankGame extends Application {
         new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (moveLeft) playerTank.rotateLeft();
-                if (moveRight) playerTank.rotateRight();
-                if (moveForward && !isCollidingWithAi()) playerTank.moveForWard(gameMap);
-                if (moveBackward && !isCollidingWithAi()) playerTank.moveBackward(gameMap);
+                if (moveLeft1) playerTank1.rotateLeft();
+                if (moveRight1) playerTank1.rotateRight();
+                if (moveForward1) playerTank1.moveForWard(gameMap, playerTank2, WIDTH, HEIGHT);
+                if (moveBackward1) playerTank1.moveBackward(gameMap, playerTank2, WIDTH, HEIGHT);
+
+                if (moveLeft2) playerTank2.rotateLeft();
+                if (moveRight2) playerTank2.rotateRight();
+                if (moveForward2) playerTank2.moveForWard(gameMap, playerTank1, WIDTH, HEIGHT);
+                if (moveBackward2) playerTank2.moveBackward(gameMap, playerTank1, WIDTH, HEIGHT);
+
 
                 draw(gc);
-                if (isShooting) {
-                    moveBullet();
+                if (playerTank1.isShooting) {
+                    playerTank1.moveBullet(gameMap, WIDTH, HEIGHT);
                 }
-                aiTank.move(playerTank.getX(), playerTank.getY(), gameMap);
-                aiTank.moveBullet();
+                if (playerTank2.isShooting) {
+                    playerTank2.moveBullet(gameMap, WIDTH, HEIGHT);
+                }
+                if (playerTank1.isShooting && playerTank1.bullet.isHit(playerTank2)) {
+                    playerTank2.reduceHp();
+                    playerTank1.isShooting = false;
+                    if (playerTank2.isDestroyed()) {
+                        stop();
+                        displayWinner("Player 1");
+                    }
+                }
+                if (playerTank2.isShooting && playerTank2.bullet.isHit(playerTank1)) {
+                    playerTank1.reduceHp();
+                    playerTank2.isShooting = false;
+                    if (playerTank1.isDestroyed()) {
+                        stop();
+                        displayWinner("Player 2");
+                    }
+                }
+                //aiTank.move(playerTank.getX(), playerTank.getY(), gameMap);
+                //aiTank.moveBullet();
             }
         }.start();
     }
 
-    private void shoot() {
-        if (!isShooting) {
-            double bulletX = playerTank.getBarrelEndX();
-            double bulletY = playerTank.getBarrelEndY();
-            mybullet = new Bullet(bulletX, bulletY);
-            isShooting = true;
-        }
-    }
 
-    private void moveBullet() {
-        mybullet.moveBullet(playerTank.getAngle());
-        if (gameMap.isBulletCollision(mybullet) || mybullet.getX() < 0 || mybullet.getX() > WIDTH || mybullet.getY() < 0 || mybullet.getY() > HEIGHT) {
-            isShooting = false;
-        }
-    }
-
-    private boolean isCollidingWithAi() {
-        if (playerTank.getBounds().intersects(aiTank.getBounds())) {
+    /*private boolean isCollidingWithO() {
+        if (playerTank1.getBounds().intersects(playerTank2.getBounds())) {
             return true;
         }
         return false;
+    }*/
+    private void displayWinner(String winner) {
+        System.out.println(winner + " wins!");
     }
+
 
     private void draw(GraphicsContext gc) {
         gc.clearRect(0, 0, WIDTH, HEIGHT);
@@ -145,14 +194,18 @@ public class TankGame extends Application {
         gameMap.draw(gc);
 
         // Vẽ xe tăng người chơi
-        playerTank.draw(gc);
+        playerTank1.draw(gc);
+        playerTank2.draw(gc);
 
         // Vẽ xe tăng máy
-        aiTank.draw(gc);
+        //aiTank.draw(gc);
 
         // Vẽ đạn
-        if (isShooting) {
-            mybullet.draw(gc, playerTank.getAngle());
+        if (playerTank1.isShooting) {
+            playerTank1.bullet.draw(gc, playerTank1.getAngle());
+        }
+        if (playerTank2.isShooting) {
+            playerTank2.bullet.draw(gc, playerTank2.getAngle());
         }
     }
 
