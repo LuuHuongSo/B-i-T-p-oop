@@ -1,6 +1,7 @@
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 
 public class PlayerTank extends Tank {
     private double tamX;
@@ -9,6 +10,7 @@ public class PlayerTank extends Tank {
     public double height = 30;
     private static final double SPEED = 3.0;
     private static final double ROTATION_SPEED = 0.05;
+    private boolean isExploding = false;
 
     private boolean isUltimateReady = true;
     private long lastUltimateTime = 0;
@@ -172,8 +174,35 @@ public class PlayerTank extends Tank {
             isUltimateReady = true;
         }
     }
+    public void drawExplosion(GraphicsContext gc, long currentTime) {
+        if(this.isDestroyed() && !this.isExploding) {
+            explosionStartTime = System.currentTimeMillis();
+            isExploding = true;
+        }
+        long elapsed = currentTime - explosionStartTime;
+        if (elapsed > EXPLOSION_DURATION) {
+            isExploding = false;
+            return;
+        }
+        double explosionSize = width * 2 * (elapsed / (double) EXPLOSION_DURATION);
 
+        gc.setFill(Color.ORANGE);
+        gc.fillOval(x - explosionSize / 2, y - explosionSize / 2, explosionSize, explosionSize);
 
+        gc.setFill(Color.RED);
+        gc.fillArc(x - explosionSize / 2, y - explosionSize / 2, explosionSize, explosionSize, 45, 270, ArcType.ROUND);
+
+        // Draw sparks
+        int numSparks = 20;
+        double sparkLength = 20;
+        for (int i = 0; i < numSparks; i++) {
+            double sparkAngle = 2 * Math.PI * i / numSparks;
+            double sparkX = x + (explosionSize / 2) * Math.cos(sparkAngle);
+            double sparkY = y + (explosionSize / 2) * Math.sin(sparkAngle);
+            gc.setStroke(Color.YELLOW);
+            gc.strokeLine(x, y, sparkX, sparkY);
+        }
+    }
 
     private class TankStub extends Tank {
         public TankStub(double x, double y, double width, double height) {

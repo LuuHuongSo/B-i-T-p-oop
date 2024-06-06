@@ -152,8 +152,8 @@ public class TankGame extends Application {
 
 
                 draw(gc);
-
                 long currentTime = System.currentTimeMillis();
+
                 if (playerTank1.isShooting) {
                     playerTank1.moveBullet(gameMap);
                     playerTank1.update(currentTime);
@@ -166,6 +166,7 @@ public class TankGame extends Application {
                     playerTank2.reduceHp(playerTank1.bullet.getDamage());
                     playerTank1.isShooting = false;
                     if (playerTank2.isDestroyed()) {
+                        playerTank2.drawExplosion(gc, currentTime);
                         stop();
                         gameWin(primaryStage, "Player 1");
                     }
@@ -174,6 +175,7 @@ public class TankGame extends Application {
                     playerTank1.reduceHp(playerTank2.bullet.getDamage());
                     playerTank2.isShooting = false;
                     if (playerTank1.isDestroyed()) {
+                        playerTank1.drawExplosion(gc, currentTime);
                         stop();
                         gameWin(primaryStage, "Player 2");
                     }
@@ -189,7 +191,6 @@ public class TankGame extends Application {
         winLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         winLabel.setAlignment(Pos.CENTER);
 
-        // Load an image to represent the winner (replace "winner.png" with your actual image file)
         Image winnerImage = new Image("file:winner.png");
         ImageView imageView = new ImageView(winnerImage);
         imageView.setFitWidth(150);
@@ -202,7 +203,8 @@ public class TankGame extends Application {
 
         Button mainMenuButton = new Button("Main Menu");
         mainMenuButton.setOnAction(event -> {
-            // Implement the logic to return to the main menu
+            GameUI gameUI = new GameUI();
+            gameUI.start(primaryStage);
         });
 
         Button exitButton = new Button("Exit");
@@ -211,11 +213,11 @@ public class TankGame extends Application {
         });
 
         // Arrange buttons in an HBox
-        HBox buttonBox = new HBox(20); // Spacing between buttons
+        HBox buttonBox = new HBox(20);
         buttonBox.getChildren().addAll(playAgainButton, mainMenuButton, exitButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        VBox root = new VBox(20); // Spacing between elements
+        VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
         root.getChildren().addAll(winLabel, imageView, buttonBox);
 
