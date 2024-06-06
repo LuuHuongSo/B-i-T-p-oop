@@ -7,6 +7,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.scene.paint.Color;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+
+
 
 public class TankGame extends Application {
 
@@ -17,8 +25,6 @@ public class TankGame extends Application {
     private PlayerTank playerTank2;
     //private AiTank aiTank;
 
-    //private boolean isShooting = false;
-    //private Bullet mybullet;
 
     private Map gameMap;
 
@@ -35,24 +41,17 @@ public class TankGame extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Image backgroundImage = new Image("file:C:/Users/Admin/Downloads/Background.jpg");
-        ImageView backgroundImageView = new ImageView(backgroundImage);
-
-        backgroundImageView.setFitWidth(WIDTH);
-        backgroundImageView.setFitHeight(HEIGHT);
-        backgroundImageView.setPreserveRatio(false);
-
         Canvas canvas = new Canvas(WIDTH, HEIGHT);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         StackPane root = new StackPane();
-        root.getChildren().addAll(backgroundImageView, canvas);
+        root.getChildren().add(canvas);
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         gameMap = new Map();
-        playerTank1 = new PlayerTank(WIDTH / 2, HEIGHT - 80, 0);
-        playerTank2 = new PlayerTank(WIDTH / 2, 50, 180);
+        playerTank1 = new PlayerTank(WIDTH / 2, HEIGHT - 80, 0, Color.DARKGREEN);
+        playerTank2 = new PlayerTank(WIDTH / 2, 50, 3.14, Color.RED);
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
@@ -71,6 +70,9 @@ public class TankGame extends Application {
                 case J:
                     playerTank1.shoot();
                     break;
+                case F:
+                    playerTank1.useUltimate();
+                    break;
                 case LEFT:
                     moveLeft2 = true;
                     break;
@@ -85,6 +87,9 @@ public class TankGame extends Application {
                     break;
                 case SPACE:
                     playerTank2.shoot();
+                    break;
+                case N:
+                    playerTank2.useUltimate();
                     break;
                 default:
                     break;
@@ -147,26 +152,30 @@ public class TankGame extends Application {
 
 
                 draw(gc);
+
+                long currentTime = System.currentTimeMillis();
                 if (playerTank1.isShooting) {
-                    playerTank1.moveBullet(gameMap, WIDTH, HEIGHT);
+                    playerTank1.moveBullet(gameMap);
+                    playerTank1.update(currentTime);
                 }
                 if (playerTank2.isShooting) {
-                    playerTank2.moveBullet(gameMap, WIDTH, HEIGHT);
+                    playerTank2.moveBullet(gameMap);
+                    playerTank2.update(currentTime);
                 }
                 if (playerTank1.isShooting && playerTank1.bullet.isHit(playerTank2)) {
-                    playerTank2.reduceHp();
+                    playerTank2.reduceHp(playerTank1.bullet.getDamage());
                     playerTank1.isShooting = false;
                     if (playerTank2.isDestroyed()) {
                         stop();
-                        displayWinner("Player 1");
+                        gameWin(primaryStage, "Player 1");
                     }
                 }
                 if (playerTank2.isShooting && playerTank2.bullet.isHit(playerTank1)) {
-                    playerTank1.reduceHp();
+                    playerTank1.reduceHp(playerTank2.bullet.getDamage());
                     playerTank2.isShooting = false;
                     if (playerTank1.isDestroyed()) {
                         stop();
-                        displayWinner("Player 2");
+                        gameWin(primaryStage, "Player 2");
                     }
                 }
                 //aiTank.move(playerTank.getX(), playerTank.getY(), gameMap);
@@ -175,16 +184,48 @@ public class TankGame extends Application {
         }.start();
     }
 
+    private void gameWin(Stage primaryStage, String player) {
+        Label winLabel = new Label(player + " wins!");
+        winLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        winLabel.setAlignment(Pos.CENTER);
 
-    /*private boolean isCollidingWithO() {
-        if (playerTank1.getBounds().intersects(playerTank2.getBounds())) {
-            return true;
-        }
-        return false;
-    }*/
-    private void displayWinner(String winner) {
-        System.out.println(winner + " wins!");
+        // Load an image to represent the winner (replace "winner.png" with your actual image file)
+        Image winnerImage = new Image("file:winner.png");
+        ImageView imageView = new ImageView(winnerImage);
+        imageView.setFitWidth(150);
+        imageView.setFitHeight(150);
+
+        Button playAgainButton = new Button("Play Again");
+        playAgainButton.setOnAction(event -> {
+            this.start(primaryStage);
+        });
+
+        Button mainMenuButton = new Button("Main Menu");
+        mainMenuButton.setOnAction(event -> {
+            // Implement the logic to return to the main menu
+        });
+
+        Button exitButton = new Button("Exit");
+        exitButton.setOnAction(event -> {
+            primaryStage.close();
+        });
+
+        // Arrange buttons in an HBox
+        HBox buttonBox = new HBox(20); // Spacing between buttons
+        buttonBox.getChildren().addAll(playAgainButton, mainMenuButton, exitButton);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        VBox root = new VBox(20); // Spacing between elements
+        root.setAlignment(Pos.CENTER);
+        root.getChildren().addAll(winLabel, imageView, buttonBox);
+
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Win Game");
+        primaryStage.show();
     }
+
 
 
     private void draw(GraphicsContext gc) {
@@ -193,7 +234,7 @@ public class TankGame extends Application {
         // Vẽ bản đồ
         gameMap.draw(gc);
 
-        // Vẽ xe tăng người chơi
+        // playerTank
         playerTank1.draw(gc);
         playerTank2.draw(gc);
 

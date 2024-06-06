@@ -3,10 +3,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Wall {
-    private double toadoX;
-    private double toadoY;
-    private double dai;
-    private double rong;
+    private final double toadoX;
+    private final double toadoY;
+    private final double dai;
+    private final double rong;
 
     public Wall(double x, double y, double dai, double rong) {
         this.toadoX = x;

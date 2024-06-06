@@ -7,20 +7,15 @@ public class AiTank extends Tank {
     private double tamY;
     public static final double width = 20;
     public static final double height = 30;
-    private static final double SPEED = 1.5;
-    private boolean isShooting = false;
-    private double playerX;
-    private double playerY;
-    private double bulletX;
-    private double bulletY;
-    private static final double BULLET_SIZE = 5;
+    private int hp = 20;
 
-    public AiTank(double x, double y) {
+    public AiTank(double x, double y, double angle) {
         this.x = x;
         this.y = y;
         this.tamX = x + width / 2;
         this.tamY = y + height / 2;
-        this.angle = 180;
+        this.angle = angle;
+        this.color = Color.DARKBLUE;
     }
 
     public Rectangle2D getBounds() {
@@ -33,13 +28,13 @@ public class AiTank extends Tank {
         gc.rotate(Math.toDegrees(angle));
         gc.translate(-tamX, -tamY);
 
-        gc.setFill(Color.RED);
+        gc.setFill(color);
         gc.fillRect(x, y, width, height);
         gc.setStroke(Color.BLACK);
         gc.strokeRect(x, y, width, height);
 
         // Add some detail to the body
-        gc.setFill(Color.RED);
+        gc.setFill(color);
         gc.fillRect(x + 2, y + 2, width - 4, height - 4);
         gc.setStroke(Color.BLACK);
         gc.strokeRect(x + 2, y + 2, width - 4, height - 4);
@@ -60,56 +55,58 @@ public class AiTank extends Tank {
         gc.setStroke(Color.BLACK);
         gc.strokeRect(x + (width - barrelWidth) / 2, y - barrelHeight, barrelWidth, barrelHeight);
 
+        //draw hp
+        gc.setFill(Color.RED);
+        gc.fillRect(x - 15, y + 33, 45, 5);
+        gc.setFill(Color.GREEN);
+        gc.fillRect(x - 15, y + 33, this.getHp() * 5, 5);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(x - 15, y + 33, 45, 5);
+
+
         gc.restore();
 
         if (isShooting) {
-            gc.setFill(Color.RED);
-            gc.fillRect(bulletX, bulletY, BULLET_SIZE, BULLET_SIZE);
+            double bulletangle = this.angle;
+            bullet.draw(gc, bulletangle);
         }
     }
 
-    public void move(double playerX, double playerY, Map map) {
-        this.playerX = playerX;
-        this.playerY = playerY;
+    public void move(PlayerTank p1, Map map) {
+        double angleToP1 = Math.atan2(p1.getY() - this.y, p1.getX() - this.x);
 
-        double dx = playerX - x;
-        double dy = playerY - y;
-        double distance = Math.sqrt(dx * dx + dy * dy);
+        boolean canSeeP1 = map.isLineOfSightClear(this.getX(), this.getY(), p1.getX(), p1.getY());
 
-        if (distance < 200) {
-            double targetAngle = Math.toDegrees(Math.atan2(dy, dx));
-            if (targetAngle < 0) targetAngle += 360;
-
-            if (Math.abs(targetAngle - angle) > 5) {
-                if ((targetAngle - angle + 360) % 360 < 180) {
-                    angle += 2;
-                } else {
-                    angle -= 2;
-                }
-            } else {
-                x += SPEED * Math.sin(Math.toRadians(angle));
-                y += SPEED * Math.cos(Math.toRadians(angle));
-            }
-
-            shoot();
+        if (canSeeP1) {
+            double rotationToP1 = Math.abs(this.angle - angleToP1);
+            this.angle = angleToP1;
+            this.shoot();
         }
+    }
+
+    public double getBarrelEndX() {
+        return x + width / 2 + (height / 2 * Math.sin(angle));
+    }
+
+    public double getBarrelEndY() {
+        return y + height / 2 - (height / 2 * Math.cos(angle));
     }
 
     private void shoot() {
-        if (!isShooting) {
-            bulletX = x + width / 2 - BULLET_SIZE / 2;
-            bulletY = y;
+        if(!isShooting) {
+            double bulletX = this.getBarrelEndX();
+            double bulletY = this.getBarrelEndY();
+            double bulletAngle = this.angle;
+            bullet = new Bullet(bulletX, bulletY, bulletAngle, 1.5, 5.0, Color.BLACK);
             isShooting = true;
         }
     }
 
-    public void moveBullet() {
+    public void moveBullet(Map gameMap) {
         if (isShooting) {
-            bulletX += 8 * Math.cos(Math.toRadians(angle));
-            bulletY += 8 * Math.sin(Math.toRadians(angle));
-
-            if (bulletX < 0 || bulletX > 800 || bulletY < 0 || bulletY > 600) {
-                isShooting = false;
+            bullet.moveBullet();
+            if(bullet.getDistanceTraveled() >= 250 || gameMap.isBulletCollision(this.bullet)) {
+                this.isShooting = false;
             }
         }
     }

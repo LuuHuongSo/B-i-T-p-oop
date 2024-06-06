@@ -26,9 +26,6 @@ public class GameUI extends Application {
             tankgame.start(gameStage);
             UIStage.close();
         });
-        // Đặt vị trí của nút
-        // playButton.setLayoutX(350); // Tọa độ X
-        // playButton.setLayoutY(500); // Tọa độ Y
 
         StackPane root = new StackPane();
         root.getChildren().addAll(backgroundImageView, bt);
