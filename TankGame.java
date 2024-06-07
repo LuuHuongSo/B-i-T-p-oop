@@ -165,8 +165,10 @@ public class TankGame extends Application {
                 if (playerTank1.isShooting && playerTank1.bullet.isHit(playerTank2)) {
                     playerTank2.reduceHp(playerTank1.bullet.getDamage());
                     playerTank1.isShooting = false;
-                    if (playerTank2.isDestroyed()) {
-                        playerTank2.drawExplosion(gc, currentTime);
+                }
+                if (playerTank2.isDestroyed()) {
+                    playerTank2.drawExplosion(gc, currentTime);
+                    if(!playerTank2.getIsExploding()) {
                         stop();
                         gameWin(primaryStage, "Player 1");
                     }
@@ -174,8 +176,10 @@ public class TankGame extends Application {
                 if (playerTank2.isShooting && playerTank2.bullet.isHit(playerTank1)) {
                     playerTank1.reduceHp(playerTank2.bullet.getDamage());
                     playerTank2.isShooting = false;
-                    if (playerTank1.isDestroyed()) {
-                        playerTank1.drawExplosion(gc, currentTime);
+                }
+                if (playerTank1.isDestroyed()) {
+                    playerTank1.drawExplosion(gc, currentTime);
+                    if(!playerTank1.getIsExploding()) {
                         stop();
                         gameWin(primaryStage, "Player 2");
                     }
@@ -237,17 +241,21 @@ public class TankGame extends Application {
         gameMap.draw(gc);
 
         // playerTank
-        playerTank1.draw(gc);
-        playerTank2.draw(gc);
+        if(!playerTank1.isDestroyed()) {
+            playerTank1.draw(gc);
+        }
+        if(!playerTank2.isDestroyed()) {
+            playerTank2.draw(gc);
+        }
 
         // Vẽ xe tăng máy
         //aiTank.draw(gc);
 
         // Vẽ đạn
-        if (playerTank1.isShooting) {
+        if (playerTank1.isShooting && !playerTank1.isDestroyed()) {
             playerTank1.bullet.draw(gc, playerTank1.getAngle());
         }
-        if (playerTank2.isShooting) {
+        if (playerTank2.isShooting && !playerTank2.isDestroyed()) {
             playerTank2.bullet.draw(gc, playerTank2.getAngle());
         }
     }

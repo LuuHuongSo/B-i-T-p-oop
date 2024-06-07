@@ -175,33 +175,57 @@ public class PlayerTank extends Tank {
         }
     }
     public void drawExplosion(GraphicsContext gc, long currentTime) {
-        if(this.isDestroyed() && !this.isExploding) {
+        if (this.isDestroyed() && !this.isExploding) {
             explosionStartTime = System.currentTimeMillis();
             isExploding = true;
         }
+
         long elapsed = currentTime - explosionStartTime;
         if (elapsed > EXPLOSION_DURATION) {
             isExploding = false;
             return;
         }
-        double explosionSize = width * 2 * (elapsed / (double) EXPLOSION_DURATION);
 
-        gc.setFill(Color.ORANGE);
-        gc.fillOval(x - explosionSize / 2, y - explosionSize / 2, explosionSize, explosionSize);
+        // Số lượng khung hình để vẽ trong thời gian 1 giây
+        int numFrames = 30;
+        // Thời gian mỗi khung hình
+        long frameDuration = EXPLOSION_DURATION / numFrames;
+        // Thời gian đã trôi qua từ thời điểm bắt đầu vụ nổ
+        long timeSinceStart = currentTime - explosionStartTime;
+        // Số khung hình đã vẽ
+        int currentFrame = (int) (timeSinceStart / frameDuration);
 
-        gc.setFill(Color.RED);
-        gc.fillArc(x - explosionSize / 2, y - explosionSize / 2, explosionSize, explosionSize, 45, 270, ArcType.ROUND);
+        // Tính kích thước của vụ nổ dựa trên thời gian đã trôi qua
+        double explosionProgress = (double) timeSinceStart / EXPLOSION_DURATION;
+        double maxExplosionSize = width * 4; // Kích thước vụ nổ lớn nhất
+        double explosionSize = maxExplosionSize * explosionProgress;
 
-        // Draw sparks
-        int numSparks = 20;
-        double sparkLength = 20;
-        for (int i = 0; i < numSparks; i++) {
-            double sparkAngle = 2 * Math.PI * i / numSparks;
-            double sparkX = x + (explosionSize / 2) * Math.cos(sparkAngle);
-            double sparkY = y + (explosionSize / 2) * Math.sin(sparkAngle);
-            gc.setStroke(Color.YELLOW);
-            gc.strokeLine(x, y, sparkX, sparkY);
+        // Vẽ từng khung hình của vụ nổ
+        for (int i = 0; i < currentFrame; i++) {
+            double frameProgress = (double) i / numFrames;
+            double frameExplosionSize = maxExplosionSize * frameProgress;
+            double frameAngleOffset = 360.0 / numFrames * i;
+
+            gc.setFill(Color.ORANGE);
+            gc.fillOval(x - frameExplosionSize / 2, y - frameExplosionSize / 2, frameExplosionSize, frameExplosionSize);
+
+            gc.setFill(Color.RED);
+            gc.fillArc(x - frameExplosionSize / 2, y - frameExplosionSize / 2, frameExplosionSize, frameExplosionSize, 45 + frameAngleOffset, 270, ArcType.ROUND);
+
+            // Vẽ tia lửa cho mỗi khung hình
+            int numSparks = 20;
+            double sparkLength = 20;
+            for (int j = 0; j < numSparks; j++) {
+                double sparkAngle = 2 * Math.PI * j / numSparks + frameAngleOffset;
+                double sparkX = x + (frameExplosionSize / 2) * Math.cos(sparkAngle);
+                double sparkY = y + (frameExplosionSize / 2) * Math.sin(sparkAngle);
+                gc.setStroke(Color.YELLOW);
+                gc.strokeLine(x, y, sparkX, sparkY);
+            }
         }
+    }
+    public boolean getIsExploding() {
+        return isExploding;
     }
 
     private class TankStub extends Tank {

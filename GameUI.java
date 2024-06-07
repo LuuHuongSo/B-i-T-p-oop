@@ -19,13 +19,20 @@ public class GameUI extends Application {
         backgroundImageView.setFitHeight(600);
         backgroundImageView.setPreserveRatio(true);
 
-        Button bt = new Button("Play game");
+        Button bt = new Button("Play vs Human");
         bt.setOnAction(event -> {
             TankGame tankgame = new TankGame();
             Stage gameStage = new Stage();
             tankgame.start(gameStage);
             UIStage.close();
         });
+        /*Button bt2 = new Button("Play vs Com");
+        bt2.setOnAction(event -> {
+            Game game = new Game();
+            Stage stage2 = new Stage();
+            game.start(stage2);
+            UIStage.close();
+        });*/
 
         StackPane root = new StackPane();
         root.getChildren().addAll(backgroundImageView, bt);
