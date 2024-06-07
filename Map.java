@@ -27,6 +27,7 @@ public class Map {
         walls.add(new Wall(290, 450, 20, 60));
         walls.add(new Wall(490, 450, 20, 60));
         walls.add(new Wall(310, 450, 180, 20));
+        //walls.add(new Wall())
     }
 
     public void draw(GraphicsContext gc) {

@@ -32,38 +32,76 @@ public class PlayerTank extends Tank {
     public void draw(GraphicsContext gc) {
         gc.save();
 
+        // Apply transformations for rotation around the tank's center
         gc.translate(tamX, tamY);
         gc.rotate(Math.toDegrees(angle));
         gc.translate(-tamX, -tamY);
 
+        // Draw the tank's body with detailed elements
         gc.setFill(color);
-        gc.fillRect(x, y, width, height);
+        gc.fillRoundRect(x, y, width, height, 10, 10);
         gc.setStroke(Color.BLACK);
-        gc.strokeRect(x, y, width, height);
+        gc.strokeRoundRect(x, y, width, height, 10, 10);
 
-        // Add some detail to the body
+        // Add inner detail to the body
         gc.setFill(color);
-        gc.fillRect(x + 2, y + 2, width - 4, height - 4);
+        gc.fillRoundRect(x + 2, y + 2, width - 4, height - 4, 8, 8);
         gc.setStroke(Color.BLACK);
-        gc.strokeRect(x + 2, y + 2, width - 4, height - 4);
+        gc.strokeRoundRect(x + 2, y + 2, width - 4, height - 4, 8, 8);
 
-        // Draw the turret
-        double turretWidth = 12;
-        double turretHeight = 12;
+        // Draw bolts on the tank body
         gc.setFill(Color.GRAY);
-        gc.fillRect(x + (width - turretWidth) / 2, y + (height - turretHeight) / 3, turretWidth, turretHeight);
-        gc.setStroke(Color.BLACK);
-        gc.strokeRect(x + (width - turretWidth) / 2, y + (height - turretHeight) / 3, turretWidth, turretHeight);
+        double[] boltOffsetsX = { 4, width - 8, 4, width - 8 };
+        double[] boltOffsetsY = { 4, 4, height - 8, height - 8 };
+        for (int i = 0; i < boltOffsetsX.length; i++) {
+            gc.fillOval(x + boltOffsetsX[i], y + boltOffsetsY[i], 4, 4);
+        }
 
-        // Draw the barrel
+        // Draw the turret with rounded edges
+        double turretWidth = 14;
+        double turretHeight = 14;
+        gc.setFill(Color.DARKSLATEGRAY);
+        gc.fillRoundRect(x + (width - turretWidth) / 2, y + (height - turretHeight) / 3, turretWidth, turretHeight, 5, 5);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRoundRect(x + (width - turretWidth) / 2, y + (height - turretHeight) / 3, turretWidth, turretHeight, 5, 5);
+
+        // Draw turret hatch
+        gc.setFill(Color.LIGHTGRAY);
+        gc.fillOval(x + (width - 8) / 2, y + (height - turretHeight) / 3 + 3, 8, 8);
+        gc.setStroke(Color.BLACK);
+        gc.strokeOval(x + (width - 8) / 2, y + (height - turretHeight) / 3 + 3, 8, 8);
+
+        // Draw the barrel with a rounded end
         double barrelWidth = 5;
-        double barrelHeight = 15;
-        gc.setFill(Color.GRAY);
+        double barrelHeight = 20;
+        gc.setFill(Color.DARKSLATEGRAY);
         gc.fillRect(x + (width - barrelWidth) / 2, y - barrelHeight, barrelWidth, barrelHeight);
         gc.setStroke(Color.BLACK);
         gc.strokeRect(x + (width - barrelWidth) / 2, y - barrelHeight, barrelWidth, barrelHeight);
 
-        //draw hp
+        // Draw barrel detail
+        gc.setFill(Color.LIGHTGRAY);
+        gc.fillRect(x + (width - barrelWidth) / 2, y - barrelHeight, barrelWidth, 5);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(x + (width - barrelWidth) / 2, y - barrelHeight, barrelWidth, 5);
+
+        // Draw tank tracks with more details
+        double trackWidth = 3;
+        double trackHeight = 6;
+        gc.setFill(Color.DARKGRAY);
+        for (int i = 0; i < width; i += 6) {
+            gc.fillRect(x + i, y + height, trackWidth, trackHeight);
+            gc.fillRect(x + i, y - trackHeight, trackWidth, trackHeight);
+        }
+
+        // Draw track treads
+        gc.setFill(Color.BLACK);
+        for (int i = 0; i < width; i += 2) {
+            gc.fillRect(x + i, y + height, 1, trackHeight);
+            gc.fillRect(x + i, y - trackHeight, 1, trackHeight);
+        }
+
+        // Draw the health bar
         gc.setFill(Color.RED);
         gc.fillRect(x - 15, y + 33, 45, 5);
         gc.setFill(Color.GREEN);
@@ -92,6 +130,24 @@ public class PlayerTank extends Tank {
         if(!gameMap.isCollisionWithWalls(new TankStub(newX, newY, width, height)) &&
                 !isCollidingWithO(playerTank2, newX, newY) && newX >= 0 &&
                 newX + width <= WIDTH && newY + height <= HEIGHT && newY >= 0) {
+            x = newX;
+            y = newY;
+        }
+        updateCenter();
+    }
+    public void moveForWardAi(double WIDTH, double HEIGHT) {
+        double newX = x + SPEED * Math.sin(angle);
+        double newY = y - SPEED * Math.cos(angle);
+        if(newX >= WIDTH && newX + width<= WIDTH + 200 && newY + height <= HEIGHT + 200 && newY >= HEIGHT) {
+            x = newX;
+            y = newY;
+        }
+        updateCenter();
+    }
+    public void moveBackwardAi(double WIDTH, double HEIGHT) {
+        double newX = x - SPEED * Math.sin(angle);
+        double newY = y + SPEED * Math.cos(angle);
+        if(newX >= WIDTH && newX + width <= WIDTH + 200 && newY + height <= HEIGHT + 200 && newY >= HEIGHT) {
             x = newX;
             y = newY;
         }
@@ -140,7 +196,13 @@ public class PlayerTank extends Tank {
     }
     public void moveBullet(Map gameMap) {
         bullet.moveBullet();
-        if (bullet.getDistanceTraveled() > 250 || gameMap.isBulletCollision(bullet)) {
+        if (bullet.getDistanceTraveled() > 300 || gameMap.isBulletCollision(bullet)) {
+            isShooting = false;
+        }
+    }
+    public void moveBullet() {
+        bullet.moveBullet();
+        if (bullet.getDistanceTraveled() > 250) {
             isShooting = false;
         }
     }
@@ -186,21 +248,15 @@ public class PlayerTank extends Tank {
             return;
         }
 
-        // Số lượng khung hình để vẽ trong thời gian 1 giây
         int numFrames = 30;
-        // Thời gian mỗi khung hình
         long frameDuration = EXPLOSION_DURATION / numFrames;
-        // Thời gian đã trôi qua từ thời điểm bắt đầu vụ nổ
         long timeSinceStart = currentTime - explosionStartTime;
-        // Số khung hình đã vẽ
         int currentFrame = (int) (timeSinceStart / frameDuration);
 
-        // Tính kích thước của vụ nổ dựa trên thời gian đã trôi qua
         double explosionProgress = (double) timeSinceStart / EXPLOSION_DURATION;
-        double maxExplosionSize = width * 4; // Kích thước vụ nổ lớn nhất
+        double maxExplosionSize = width * 4;
         double explosionSize = maxExplosionSize * explosionProgress;
 
-        // Vẽ từng khung hình của vụ nổ
         for (int i = 0; i < currentFrame; i++) {
             double frameProgress = (double) i / numFrames;
             double frameExplosionSize = maxExplosionSize * frameProgress;
@@ -212,7 +268,6 @@ public class PlayerTank extends Tank {
             gc.setFill(Color.RED);
             gc.fillArc(x - frameExplosionSize / 2, y - frameExplosionSize / 2, frameExplosionSize, frameExplosionSize, 45 + frameAngleOffset, 270, ArcType.ROUND);
 
-            // Vẽ tia lửa cho mỗi khung hình
             int numSparks = 20;
             double sparkLength = 20;
             for (int j = 0; j < numSparks; j++) {

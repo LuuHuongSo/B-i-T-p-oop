@@ -26,16 +26,26 @@ public class GameUI extends Application {
             tankgame.start(gameStage);
             UIStage.close();
         });
-        /*Button bt2 = new Button("Play vs Com");
-        bt2.setOnAction(event -> {
+        Button bt1 = new Button("Play vs Com");
+        bt1.setOnAction(event ->{
             Game game = new Game();
-            Stage stage2 = new Stage();
-            game.start(stage2);
+            Stage gameStage = new Stage();
+            game.start(gameStage);
             UIStage.close();
-        });*/
+        });
+        Button bt2 = new Button("Exit");
+        bt2.setOnAction(event -> {
+            System.exit(0);
+        });
 
         StackPane root = new StackPane();
-        root.getChildren().addAll(backgroundImageView, bt);
+        root.getChildren().addAll(backgroundImageView, bt, bt1, bt2);
+
+        bt.setTranslateY(-50); // Di chuyển nút "Play vs Human" lên trên
+        bt1.setTranslateX(-100); // Di chuyển nút "Play vs Com" sang trái
+        bt1.setTranslateY(-50); // Di chuyển nút "Play vs Com" lên trên
+        bt2.setTranslateX(100); // Di chuyển nút "Exit" sang phải
+        bt2.setTranslateY(-50); // Di chuyển nút "Exit" lên trên
 
         Scene sc = new Scene(root, 800, 600);
 

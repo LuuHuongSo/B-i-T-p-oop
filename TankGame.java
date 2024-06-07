@@ -67,7 +67,7 @@ public class TankGame extends Application {
                 case S:
                     moveBackward1 = true;
                     break;
-                case J:
+                case R:
                     playerTank1.shoot();
                     break;
                 case F:
