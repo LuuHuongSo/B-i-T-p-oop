@@ -30,10 +30,10 @@ public class Game extends Application {
     private static final double WIDTH = 800;
     private static final double HEIGHT = 600;
     private static final double SPAWN_INTERVAL = 5; // seconds
-    private static final int MAX_AITANKS = 4;
+    private static final int MAX_AITANKS = 3;
     private Random random = new Random();
 
-    private boolean moveLeft = false;
+    private boolean moveLeft = false; 
     private boolean moveRight = false;
     private boolean moveForward = false;
     private boolean moveBackward = false;
@@ -44,7 +44,8 @@ public class Game extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        playerTank = new PlayerTank(390, HEIGHT - 100, 0, Color.DARKGREEN);
+
+        playerTank = new PlayerTank(390, HEIGHT - 100, 0, Color.DARKGREEN, 20);
         aiMap = new AiMap();
         aiTanks = new ArrayList<>();
 
@@ -186,7 +187,7 @@ public class Game extends Application {
     private void spawnAiTank() {
         if (aiTanks.size() < MAX_AITANKS) {
             double x = random.nextDouble() * WIDTH;
-            AiTank aiTank = new AiTank(x, 0, Math.PI);
+            AiTank aiTank = new AiTank(x, 0, Math.PI, 2);
             aiTanks.add(aiTank);
         }
     }
@@ -196,6 +197,13 @@ public class Game extends Application {
         gc.fillText("Score: " + score, 10, 20);
     }
     private void gameWin(Stage primaryStage, int score) {
+        Image backgroundImage = new Image("file:C:/Users/Admin/Downloads/TankGame.jpg");
+
+        ImageView backgroundImageView = new ImageView(backgroundImage);
+
+        backgroundImageView.setFitWidth(800);
+        backgroundImageView.setFitHeight(600);
+        backgroundImageView.setPreserveRatio(true);
         Label winLabel = new Label("Số tank bạn đã bắn hạ: " + score);
         winLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         winLabel.setAlignment(Pos.CENTER);
@@ -223,7 +231,7 @@ public class Game extends Application {
 
         VBox root = new VBox(20);
         root.setAlignment(Pos.CENTER);
-        root.getChildren().addAll(winLabel, buttonBox);
+        root.getChildren().addAll(winLabel, buttonBox, backgroundImageView);
 
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 

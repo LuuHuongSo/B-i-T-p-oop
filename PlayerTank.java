@@ -11,18 +11,21 @@ public class PlayerTank extends Tank {
     private static final double SPEED = 3.0;
     private static final double ROTATION_SPEED = 0.05;
     private boolean isExploding = false;
+    private double maxhp;
 
     private boolean isUltimateReady = true;
     private long lastUltimateTime = 0;
     private static final long ULTIMATE_COOLDOWN = 5000; // 8 giây
 
-    public PlayerTank(double x, double y, double angle, Color color) {
+    public PlayerTank(double x, double y, double angle, Color color, int hp) {
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.tamX = x + width / 2;
         this.tamY = y + height / 2;
         this.color = color;
+        this.hp = hp;
+        this.maxhp = hp;
     }
 
     public Rectangle2D getBounds() {
@@ -103,11 +106,11 @@ public class PlayerTank extends Tank {
 
         // Draw the health bar
         gc.setFill(Color.RED);
-        gc.fillRect(x - 15, y + 33, 45, 5);
+        gc.fillRect(x - 14, y + 33, 45, 3);
         gc.setFill(Color.GREEN);
-        gc.fillRect(x - 15, y + 33, this.getHp() * 5, 5);
+        gc.fillRect(x - 14, y + 33, this.getHp() * (45 / maxhp), 3);
         gc.setStroke(Color.BLACK);
-        gc.strokeRect(x - 15, y + 33, 45, 5);
+        gc.strokeRect(x - 14, y + 33, 45, 3);
 
         gc.restore();
     }

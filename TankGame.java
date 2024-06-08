@@ -50,8 +50,8 @@ public class TankGame extends Application {
         Scene scene = new Scene(root, WIDTH, HEIGHT);
 
         gameMap = new Map();
-        playerTank1 = new PlayerTank(WIDTH / 2, HEIGHT - 80, 0, Color.DARKGREEN);
-        playerTank2 = new PlayerTank(WIDTH / 2, 50, 3.14, Color.RED);
+        playerTank1 = new PlayerTank(140, HEIGHT / 2 , Math.PI / 2, Color.DARKGREEN, 9);
+        playerTank2 = new PlayerTank(640, HEIGHT / 2, Math.PI * 3 / 2 , Color.RED, 9);
 
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
@@ -67,7 +67,7 @@ public class TankGame extends Application {
                 case S:
                     moveBackward1 = true;
                     break;
-                case R:
+                case J:
                     playerTank1.shoot();
                     break;
                 case F:

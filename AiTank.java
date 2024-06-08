@@ -13,14 +13,17 @@ public class AiTank extends Tank {
     private final double ROTATION_SPEED = 0.05;
     private final double SPEED = 1.5;
     public boolean isExploding = false;
+    private double maxhp;
 
-    public AiTank(double x, double y, double angle) {
+    public AiTank(double x, double y, double angle, int hp) {
         this.x = x;
         this.y = y;
         this.tamX = x + width / 2;
         this.tamY = y + height / 2;
         this.angle = angle;
         this.color = Color.DARKBLUE;
+        this.hp = hp;
+        this.maxhp = hp;
     }
 
     public Rectangle2D getBounds() {
@@ -100,12 +103,13 @@ public class AiTank extends Tank {
         }
 
         // Draw the health bar
+        // Draw the health bar
         gc.setFill(Color.RED);
-        gc.fillRect(x - 15, y + 33, 45, 5);
+        gc.fillRect(x - 16, y + 33, 45, 3);
         gc.setFill(Color.GREEN);
-        gc.fillRect(x - 15, y + 33, this.getHp() * 5, 5);
+        gc.fillRect(x - 16, y + 33, this.getHp() * (45 / maxhp), 3);
         gc.setStroke(Color.BLACK);
-        gc.strokeRect(x - 15, y + 33, 45, 5);
+        gc.strokeRect(x - 15, y + 33, 45, 3);
 
         gc.restore();
 

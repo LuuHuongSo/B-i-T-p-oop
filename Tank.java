@@ -1,13 +1,11 @@
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.shape.ArcType;
 
 public abstract class Tank {
     protected double x, y, width, height, angle;
     public boolean isShooting = false;
     protected Color color;
-    protected int hp = 9;
+    protected double hp;
     public Bullet bullet;
     protected long explosionStartTime;
     protected static final long EXPLOSION_DURATION = 1500; // 1.5 seconds
@@ -36,7 +34,7 @@ public abstract class Tank {
         return angle;
     }
 
-    public int getHp() {
+    public double getHp() {
         return hp;
     }
 

@@ -1,11 +1,11 @@
-import javafx.geometry.Rectangle2D;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
 public class Map {
 
-    private ArrayList<Wall> walls;
+    private final ArrayList<Wall> walls;
 
     public Map() {
         walls = new ArrayList<>();
@@ -27,6 +27,8 @@ public class Map {
         walls.add(new Wall(290, 450, 20, 60));
         walls.add(new Wall(490, 450, 20, 60));
         walls.add(new Wall(310, 450, 180, 20));
+        walls.add(new Wall(240, 250, 20, 100));
+        walls.add(new Wall(540, 250, 20, 100));
         //walls.add(new Wall())
     }
 
@@ -77,18 +79,5 @@ public class Map {
             }
         }
         return false;
-    }
-
-    public boolean isLineOfSightClear(double x1, double y1, double x2, double y2) {
-        for (Wall wall : walls) {
-            if (lineIntersectsRectangle(x1, y1, x2, y2, wall.getBounds())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean lineIntersectsRectangle(double x1, double y1, double x2, double y2, Rectangle2D rect) {
-        return rect.intersects(x1, y1, x2 - x1, y2 - y1);
     }
 }

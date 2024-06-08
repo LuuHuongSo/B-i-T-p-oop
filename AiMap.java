@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
 public class AiMap {
-    private ArrayList<Wall> walls2;
+    private final ArrayList<Wall> walls2;
 
     public AiMap() {
         walls2 = new ArrayList<>();
@@ -44,7 +44,7 @@ public class AiMap {
         gc.fillOval(300, 370, 20, 10);
         gc.fillOval(320, 380, 30, 15);
 
-        gc.setFill(Color.BLACK);
-        gc.fillOval(300, 400, 200, 200);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(300, 400, 200, 200);
     }
 }

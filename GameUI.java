@@ -33,19 +33,18 @@ public class GameUI extends Application {
             game.start(gameStage);
             UIStage.close();
         });
+
         Button bt2 = new Button("Exit");
-        bt2.setOnAction(event -> {
-            System.exit(0);
-        });
+        bt2.setOnAction(event -> System.exit(0));
 
         StackPane root = new StackPane();
         root.getChildren().addAll(backgroundImageView, bt, bt1, bt2);
 
-        bt.setTranslateY(-50); // Di chuyển nút "Play vs Human" lên trên
-        bt1.setTranslateX(-100); // Di chuyển nút "Play vs Com" sang trái
-        bt1.setTranslateY(-50); // Di chuyển nút "Play vs Com" lên trên
-        bt2.setTranslateX(100); // Di chuyển nút "Exit" sang phải
-        bt2.setTranslateY(-50); // Di chuyển nút "Exit" lên trên
+        bt.setTranslateY(-50);
+        bt1.setTranslateX(-100);
+        bt1.setTranslateY(-50);
+        bt2.setTranslateX(100);
+        bt2.setTranslateY(-50);
 
         Scene sc = new Scene(root, 800, 600);
 
