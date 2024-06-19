@@ -11,7 +11,11 @@ public class GameUI extends Application {
 
     @Override
     public void start(Stage UIStage) {
+<<<<<<< Updated upstream
         Image backgroundImage = new Image("file:C:/Users/Admin/Downloads/TankGame.jpg");
+=======
+        Image backgroundImage = new Image("file:C:/Users/Admin/OneDrive/Documents/GitHub/B-i-T-p-oop/BackGround.jpg");
+>>>>>>> Stashed changes
 
         ImageView backgroundImageView = new ImageView(backgroundImage);
 
