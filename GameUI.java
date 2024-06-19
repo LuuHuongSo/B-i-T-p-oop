@@ -11,7 +11,7 @@ public class GameUI extends Application {
 
     @Override
     public void start(Stage UIStage) {
-        Image backgroundImage = new Image("file:C:/Users/Admin/Desktop/B-i-T-p-oop-Ch-t/B-i-T-p-oop/551461 (1).jpg/");
+        Image backgroundImage = new Image("file:C:/Users/Admin/OneDrive/Documents/GitHub/B-i-T-p-oop/BackGround.jpg/");
 
         ImageView backgroundImageView = new ImageView(backgroundImage);
 
